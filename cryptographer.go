@@ -83,20 +83,23 @@ func (c *cypher) NewDecrypter(r io.Reader) *Decrypter {
 	return &dec
 }
 
-// NewBruteForceDecrypter returns instance of Decrypter that
-// decrypt contents of r using brute force method
-func (c *cypher) NewBruteForceDecrypter(r io.Reader) *Decrypter {
-	dec := Decrypter{c: c, r: r}
+// BruteForce switch Decrypter to brute force method
+func (dec *Decrypter) BruteForce() *Decrypter {
 	dec.decf = dec.bruteForce
-	return &dec
+	return dec
 }
 
-// NewFreqAnalisysDecrypter returns instance of Decrypter that
-// decrypt contents of r using frequency analysis method
-func (c *cypher) NewFreqAnalisysDecrypter(r io.Reader, helper io.Reader) *Decrypter {
-	dec := Decrypter{c: c, r: r, hr: helper}
+// FrequencyAnalysis switch Decrypter to frequency analysis method
+func (dec *Decrypter) FrequencyAnalysis() *Decrypter {
 	dec.decf = dec.frequencyAnalysis
-	return &dec
+	return dec
+}
+
+// Helper adds helper reader to Decrypter, it's meant to used
+// only when frequency analysis is performed
+func (dec *Decrypter) Helper(helper io.Reader) *Decrypter {
+	dec.hr = helper
+	return dec
 }
 
 // Encrypt reads the contents of r, encrypting it
@@ -202,20 +205,24 @@ func (dec *Decrypter) frequencyAnalysis(w io.Writer) error {
 
 	dec.c.logger.Printf("Decrypting by frequency analysis...\n")
 
-	// read the helper
-	b, err := io.ReadAll(dec.hr)
-	if err != nil {
-		return err
+	var mfrDecrypted = mostFrequentChar
+
+	if dec.hr != nil {
+		// read the helper
+		b, err := io.ReadAll(dec.hr)
+		if err != nil {
+			return err
+		}
+
+		// find most frequent rune
+		mfrDecrypted, err = dec.c.countMostFrequent(b)
+		if err != nil {
+			return err
+		}
 	}
 
-	// find most frequent rune
-	mfrDecrypted, err := dec.c.countMostFrequent(b)
-	if err != nil {
-		return err
-	}
-
-	// read the Encryptd
-	b, err = io.ReadAll(dec.r)
+	// read the encrypted
+	b, err := io.ReadAll(dec.r)
 	if err != nil {
 		return err
 	}
