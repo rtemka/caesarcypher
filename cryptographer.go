@@ -13,7 +13,7 @@ import (
 const mostFrequentChar = ' '
 
 // if we found rune that is not in our alphabet
-const skipRune = '~'
+const skipRune = '\uFFFD'
 
 // cryptoAlphabet returns slice of runes that is our program working with
 func cryptoAlphabet() []rune {
