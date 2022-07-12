@@ -16,14 +16,8 @@ const mostFrequentChar = ' '
 // if we found rune that is not in our alphabet
 const skipRune = unicode.ReplacementChar
 
-// cryptoAlphabet returns slice of runes that is our program working with
-func cryptoAlphabet() []rune {
-	return []rune{'А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И', 'Й', 'К', 'Л', 'М',
-		'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ъ', 'Ы', 'Ь', 'Э', 'Ю', 'Я',
-		'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к', 'л', 'м',
-		'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я',
-		':', ',', '"', '?', '-', '—', '.', '!', ' '}
-}
+// cryptoAlphabet is the slice of runes that is our program working with
+var cryptoAlphabet = []rune(`АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя:,"?-—.! `)
 
 // entity holding cypher logic
 type cypher struct {
@@ -49,7 +43,7 @@ type Decrypter struct {
 func NewCypher(key int, l *log.Logger) (*cypher, error) {
 
 	// get our alphabet
-	alphabet := cryptoAlphabet()
+	alphabet := cryptoAlphabet[:]
 	size := len(alphabet)
 
 	if key > size {
